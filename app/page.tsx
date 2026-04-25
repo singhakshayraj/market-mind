@@ -1,101 +1,112 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const [idea, setIdea] = useState("");
+  const [geography, setGeography] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [charCount, setCharCount] = useState(0);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (idea.trim().length < 10) return;
+    setLoading(true);
+    const params = new URLSearchParams({
+      idea: idea.trim(),
+      ...(geography && { geography }),
+      ...(industry && { industry }),
+    });
+    router.push(`/analyse?${params.toString()}`);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col items-center justify-center px-4 py-16">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-2 mb-6">
+          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+          <span className="text-indigo-300 text-sm font-medium">AI-Powered Market Research</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+          MarketMind <span className="text-indigo-400">AI</span>
+        </h1>
+        <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Describe your business idea in plain English.
+          <br />
+          Get MBA-level market research in under 3 minutes.
+        </p>
+      </div>
+
+      {/* Form */}
+      <div className="w-full max-w-2xl">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <textarea
+              value={idea}
+              onChange={(e) => {
+                setIdea(e.target.value);
+                setCharCount(e.target.value.length);
+              }}
+              placeholder="e.g. I want to build an app that connects freelance truck drivers with small businesses that need same-day delivery in tier-2 Indian cities. The idea is that drivers waste 30–40% of their time with empty trucks on return trips, and small businesses pay too much for courier services..."
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-2xl p-5 text-white placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-base leading-relaxed"
+              rows={6}
+              maxLength={2000}
+            />
+            <span className="absolute bottom-3 right-4 text-slate-500 text-xs">{charCount}/2000</span>
+          </div>
+
+          {/* Optional fields */}
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              type="text"
+              value={geography}
+              onChange={(e) => setGeography(e.target.value)}
+              placeholder="Target geography (optional)"
+              className="bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
+            />
+            <input
+              type="text"
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              placeholder="Industry category (optional)"
+              className="bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={idea.trim().length < 10 || loading}
+            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-lg rounded-xl py-4 transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Starting analysis...
+              </>
+            ) : (
+              "Analyse My Idea"
+            )}
+          </button>
+        </form>
+
+        {/* Feature highlights */}
+        <div className="mt-10 grid grid-cols-3 gap-4 text-center">
+          {[
+            { label: "10 Analysis Modules", sub: "All in one report" },
+            { label: "Under 3 Minutes", sub: "Full report generated" },
+            { label: "Plain English", sub: "No MBA required" },
+          ].map((item) => (
+            <div key={item.label} className="bg-slate-800/30 rounded-xl p-4">
+              <div className="text-white font-semibold text-sm">{item.label}</div>
+              <div className="text-slate-400 text-xs mt-1">{item.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }
