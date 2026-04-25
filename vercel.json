@@ -1,6 +1,9 @@
 {
   "functions": {
-    "app/api/analyse/route.ts": {
+    "api/analyse": {
+      "maxDuration": 60
+    },
+    "api/export/[reportId]": {
       "maxDuration": 60
     }
   }
