@@ -56,7 +56,6 @@ import {
 } from "@/lib/ai/prompts/10-investor-lens";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
 
 function send(
   controller: ReadableStreamDefaultController,
