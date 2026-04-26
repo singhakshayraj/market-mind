@@ -1,27 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:        #f8f6f2;
+  --bg-card:   #f2efe9;
+  --ink:       #1c1917;
+  --ink-2:     #57534e;
+  --ink-3:     #a8a29e;
+  --rule:      #e5e2db;
+  --accent:    oklch(44% 0.18 258);
+  --accent-lt: oklch(96% 0.04 258);
+  --accent-md: oklch(88% 0.08 258);
+  --green:     oklch(50% 0.18 155);
+  --green-lt:  oklch(95% 0.06 155);
+  --amber:     oklch(55% 0.17 80);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+a { text-decoration: none; color: inherit; }
+button { font-family: 'DM Sans', sans-serif; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+@keyframes bar-grow { from { width: 0; } }
+@keyframes fade-up  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin     { to { transform: rotate(360deg); } }
+
+.fade-up { animation: fade-up 0.5s ease both; }
