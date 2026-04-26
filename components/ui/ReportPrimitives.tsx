@@ -59,6 +59,15 @@ export function SectionShell({ id, number, title, summary, children, modelUsed }
   );
 }
 
+/* ── IndiaBadge ── */
+export function IndiaBadge() {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 7px", borderRadius: 99, fontSize: 10, fontWeight: 700, background: "#FF9933", color: "#fff", letterSpacing: "0.04em", flexShrink: 0 }}>
+      🇮🇳 India Data
+    </span>
+  );
+}
+
 /* ── Chip ── */
 type ChipColor = "neutral"|"green"|"red"|"amber"|"blue";
 export function Chip({ label, color = "neutral" }: { label: string; color?: ChipColor }) {
