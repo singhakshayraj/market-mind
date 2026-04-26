@@ -119,7 +119,7 @@ export default function ReportClient({ report }: Props) {
       </div>
 
       {/* Header */}
-      <header style={{
+      <header className="report-header" style={{
         position: "sticky", top: 0, zIndex: 50,
         height: 60, display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 24px",
@@ -127,34 +127,34 @@ export default function ReportClient({ report }: Props) {
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid var(--rule)",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div className="report-header-left" style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--ink)", textDecoration: "none" }}>
             <span style={{ fontSize: 13 }}>←</span>
             <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-2)" }}>New idea</span>
           </a>
           <span style={{ width: 1, height: 16, background: "var(--rule)" }} />
-          <span style={{ fontSize: 13, color: "var(--ink)", fontWeight: 500, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span className="report-header-title" style={{ fontSize: 13, color: "var(--ink)", fontWeight: 500, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {idData?.industry ?? report.industry ?? "Market Research"}
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="report-header-right" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {validationScore !== null && (
-            <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 99, background: "oklch(95% 0.06 155)", color: "oklch(38% 0.14 155)", border: "1px solid oklch(85% 0.08 155)" }}>
+            <span className="report-header-score" style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 99, background: "oklch(95% 0.06 155)", color: "oklch(38% 0.14 155)", border: "1px solid oklch(85% 0.08 155)" }}>
               {validationScore}/100 Validation
             </span>
           )}
-          <button onClick={handleShare} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "var(--bg-card)", border: "1px solid var(--rule)", color: "var(--ink-2)", cursor: "pointer" }}>
+          <button className="report-btn" onClick={handleShare} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "var(--bg-card)", border: "1px solid var(--rule)", color: "var(--ink-2)", cursor: "pointer" }}>
             {copied ? "Copied!" : "Share"}
           </button>
-          <button onClick={handleExport} disabled={exporting} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "var(--accent)", color: "#fff", border: "none", cursor: exporting ? "not-allowed" : "pointer", opacity: exporting ? 0.7 : 1 }}>
+          <button className="report-btn" onClick={handleExport} disabled={exporting} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "var(--accent)", color: "#fff", border: "none", cursor: exporting ? "not-allowed" : "pointer", opacity: exporting ? 0.7 : 1 }}>
             {exporting ? "Exporting…" : "Export PDF"}
           </button>
         </div>
       </header>
 
-      <div style={{ display: "flex", maxWidth: 1200, margin: "0 auto" }}>
+      <div className="report-layout" style={{ display: "flex", maxWidth: 1200, margin: "0 auto" }}>
         {/* Left Nav */}
-        <nav style={{
+        <nav className="report-sidebar" style={{
           width: 252, flexShrink: 0,
           position: "sticky", top: 60, alignSelf: "flex-start",
           height: "calc(100vh - 60px)", overflowY: "auto",
@@ -206,7 +206,7 @@ export default function ReportClient({ report }: Props) {
         </nav>
 
         {/* Main content */}
-        <main style={{ flex: 1, minWidth: 0, padding: "40px 40px 80px" }}>
+        <main className="report-main" style={{ flex: 1, minWidth: 0, padding: "40px 40px 80px" }}>
           {/* Report title block */}
           <div style={{ marginBottom: 48 }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
@@ -256,7 +256,7 @@ export default function ReportClient({ report }: Props) {
           </div>
 
           {/* Bottom CTA */}
-          <div style={{ marginTop: 64, padding: "40px 40px", borderRadius: 16, background: "var(--ink)", textAlign: "center" }}>
+          <div className="report-cta" style={{ marginTop: 64, padding: "40px 40px", borderRadius: 16, background: "var(--ink)", textAlign: "center" }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "oklch(70% 0.04 258)", marginBottom: 12 }}>Unlock the full report</div>
             <h2 style={{ fontFamily: "'DM Serif Display',serif", fontSize: "clamp(22px,2.5vw,30px)", fontWeight: 400, color: "#fff", marginBottom: 10, letterSpacing: "-0.02em" }}>
               3 modules still locked
@@ -264,7 +264,7 @@ export default function ReportClient({ report }: Props) {
             <p style={{ fontSize: 14, color: "oklch(75% 0.03 258)", lineHeight: 1.6, maxWidth: 400, margin: "0 auto 24px" }}>
               Risk Radar, Trend & Timing, and Investor Lens reveal the risks, market timing, and VC potential of your idea.
             </p>
-            <button style={{ padding: "12px 28px", borderRadius: 10, background: "var(--accent)", color: "#fff", fontWeight: 600, fontSize: 14, border: "none", cursor: "pointer" }}>
+            <button className="report-cta-btn" style={{ padding: "12px 28px", borderRadius: 10, background: "var(--accent)", color: "#fff", fontWeight: 600, fontSize: 14, border: "none", cursor: "pointer" }}>
               Upgrade to Pro — $29/mo
             </button>
           </div>

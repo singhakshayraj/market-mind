@@ -41,3 +41,64 @@ button { font-family: 'DM Sans', sans-serif; }
 @keyframes spin     { to { transform: rotate(360deg); } }
 
 .fade-up { animation: fade-up 0.5s ease both; }
+
+/* ── Mobile responsiveness ── */
+@media (max-width: 768px) {
+
+  /* ── Report page: hide sidebar, full-width main ── */
+  .report-layout        { flex-direction: column !important; }
+  .report-sidebar       { display: none !important; }
+  .report-main          { padding: 20px 16px 60px !important; }
+
+  /* Report header */
+  .report-header        { padding: 0 12px !important; }
+  .report-header-left   { gap: 8px !important; max-width: 55% !important; }
+  .report-header-title  { display: none !important; }
+  .report-header-right  { gap: 6px !important; }
+  .report-header-score  { display: none !important; }
+  .report-btn           { padding: 6px 10px !important; font-size: 12px !important; }
+
+  /* ── Landing page: nav ── */
+  .landing-nav-links    { display: none !important; }
+  .landing-nav-inner    { padding: 0 16px !important; }
+
+  /* Landing hero */
+  .landing-hero         { padding: 48px 16px 40px !important; }
+  .landing-hero-grid    { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .landing-context-grid { grid-template-columns: 1fr !important; }
+
+  /* Social proof strip */
+  .social-strip-inner   { padding: 0 16px !important; gap: 16px !important; }
+  .social-strip-quote   { display: none !important; }
+  .social-strip-divider { display: none !important; }
+
+  /* How it works, pricing, sections — override inline padding to be mobile-friendly */
+  .steps-grid           { grid-template-columns: 1fr !important; }
+  .pricing-grid         { grid-template-columns: 1fr !important; }
+
+  /* Shrink large section side-padding to fit mobile */
+  section[id="how-it-works"],
+  section[id="pricing"]       { padding-left: 16px !important; padding-right: 16px !important; padding-top: 48px !important; padding-bottom: 48px !important; }
+
+  /* Testimonials section (no id — target its bg) */
+  .landing-hero         { padding: 40px 16px 36px !important; }
+
+  /* ── Report section internals ── */
+
+  /* TAM/SAM/SOM — 3-col → 1-col */
+  .market-tam-grid      { grid-template-columns: 1fr !important; }
+
+  /* Competitor strengths/weaknesses 2-col → 1-col */
+  .two-col-grid         { grid-template-columns: 1fr !important; }
+
+  /* Section shells */
+  .section-shell        { padding-bottom: 40px !important; }
+
+  /* Bottom CTA */
+  .report-cta           { padding: 28px 20px !important; }
+  .report-cta-btn       { width: 100% !important; }
+
+  /* Analyse page */
+  .analyse-inner        { padding: 0 16px !important; }
+  .analyse-modules      { max-width: 100% !important; }
+}

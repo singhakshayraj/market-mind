@@ -41,7 +41,7 @@ export default function CompetitorLandscapeSection({ data }: Props) {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
+            <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
               <div>
                 <div style={{ ...RS.label, color: "oklch(38% 0.14 155)", marginBottom: 6 }}>Strengths</div>
                 <ul style={{ display: "flex", flexDirection: "column" as const, gap: 4 }}>

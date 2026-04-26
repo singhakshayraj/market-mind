@@ -22,7 +22,7 @@ export default function MarketSizingSection({ data }: Props) {
 
   return (
     <SectionShell id="market-sizing" number={2} title="Market Sizing" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+      <div className="market-tam-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
         {markets.map(({ acronym, name, sub, val }) => (
           <div key={acronym} style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 12, padding: "18px 20px" }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--accent)", marginBottom: 4 }}>{acronym}</div>

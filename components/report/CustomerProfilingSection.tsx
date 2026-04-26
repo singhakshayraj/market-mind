@@ -43,7 +43,7 @@ export default function CustomerProfilingSection({ data }: Props) {
             <div style={{ fontSize: 13, color: "var(--ink-3)" }}>{p.occupation} · {p.age_range}</div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
+          <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
             <div>
               <div style={{ ...RS.label, marginBottom: 8, color: "oklch(38% 0.14 155)" }}>Goals</div>
               <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
@@ -66,7 +66,7 @@ export default function CustomerProfilingSection({ data }: Props) {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: p.monthly_income_inr ? 16 : 0 }}>
+          <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: p.monthly_income_inr ? 16 : 0 }}>
             <div>
               <div style={{ ...RS.label, marginBottom: 8 }}>Where to Find Them</div>
               <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>

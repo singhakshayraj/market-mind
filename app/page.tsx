@@ -25,7 +25,7 @@ function NavBar() {
       background: "rgba(248,246,242,0.94)", backdropFilter: "blur(12px)",
       borderBottom: "1px solid var(--rule)",
     }}>
-      <div style={{
+      <div className="landing-nav-inner" style={{
         maxWidth: 1140, margin: "0 auto", padding: "0 32px", height: "100%",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
@@ -39,7 +39,7 @@ function NavBar() {
             MarketMind <span style={{ color: "var(--accent)", fontWeight: 600 }}>AI</span>
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <div className="landing-nav-links" style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <a href="#how-it-works" style={{ padding: "5px 12px", borderRadius: 6, fontSize: 13, color: "var(--ink-2)" }}>How it works</a>
           <a href="#pricing" style={{ padding: "5px 12px", borderRadius: 6, fontSize: 13, color: "var(--ink-2)" }}>Pricing</a>
           <a href="#hero-form" style={{
@@ -62,7 +62,7 @@ function SocialProofStrip() {
   ];
   return (
     <div style={{ background: "var(--ink)", padding: "10px 0" }}>
-      <div style={{
+      <div className="social-strip-inner" style={{
         maxWidth: 1140, margin: "0 auto", padding: "0 32px",
         display: "flex", alignItems: "center", justifyContent: "center", gap: 40, flexWrap: "wrap",
       }}>
@@ -72,8 +72,8 @@ function SocialProofStrip() {
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>{label}</span>
           </div>
         ))}
-        <div style={{ width: 1, height: 14, background: "rgba(255,255,255,0.12)" }} />
-        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontStyle: "italic" }}>
+        <div className="social-strip-divider" style={{ width: 1, height: 14, background: "rgba(255,255,255,0.12)" }} />
+        <span className="social-strip-quote" style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontStyle: "italic" }}>
           &ldquo;The first tool that actually replaced a consultant.&rdquo; — Priya S., Bengaluru
         </span>
       </div>
@@ -157,7 +157,7 @@ function IdeaForm({ ctaLabel = "Analyse My Idea →", compact = false }: { ctaLa
       </button>
 
       {showContext && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div className="landing-context-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <input
             type="text"
             value={geography}
@@ -216,7 +216,7 @@ function IdeaForm({ ctaLabel = "Analyse My Idea →", compact = false }: { ctaLa
 /* ─── Hero (Variant A — The Friend) ─── */
 function Hero() {
   return (
-    <div style={{ padding: "72px 32px 60px" }}>
+    <div className="landing-hero" style={{ padding: "72px 32px 60px" }}>
       <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: "var(--ink-2)" }}>
           <span style={{
@@ -283,7 +283,7 @@ function ReportPreviewSection() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
           {/* Module 02 — Market Sizing */}
           <div style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 14, overflow: "hidden" }}>
             <div style={{ padding: "14px 18px 12px", borderBottom: "1px solid var(--rule)", background: "var(--bg-card)" }}>
@@ -411,7 +411,7 @@ function TestimonialsSection() {
             What founders say.
           </h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
           {quotes.map(q => (
             <div key={q.name} style={{
               background: "#fff", border: "1px solid var(--rule)", borderRadius: 14,
@@ -473,7 +473,7 @@ function PricingSection() {
             You&apos;ll upgrade when you need more reports, not because we blocked you.
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div className="pricing-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
           {tiers.map(t => (
             <div key={t.name} style={{
               background: t.badge ? "var(--ink)" : "#fff",
