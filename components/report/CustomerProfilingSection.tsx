@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection, IndiaBadge } from "../ui/ReportPrimitives";
 import type { CustomerProfiling } from "@/lib/schemas";
 
 interface Props {
@@ -66,10 +66,10 @@ export default function CustomerProfilingSection({ data }: Props) {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: p.monthly_income_inr ? 16 : 0 }}>
             <div>
               <div style={{ ...RS.label, marginBottom: 8 }}>Where to Find Them</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
                 {p.where_to_find_them.map((w, i) => <Chip key={i} label={w} color="blue" />)}
               </div>
             </div>
@@ -78,6 +78,51 @@ export default function CustomerProfilingSection({ data }: Props) {
               <p style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.6 }}>{p.willingness_to_pay}</p>
             </div>
           </div>
+
+          {/* India Intelligence fields */}
+          {(p.monthly_income_inr || p.tier_city || p.preferred_payment_method || p.where_to_find_them_india) && (
+            <div style={{ borderTop: "1px solid #FF993330", paddingTop: 14, marginTop: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                <IndiaBadge />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: p.where_to_find_them_india ? 12 : 0 }}>
+                {p.monthly_income_inr && (
+                  <div>
+                    <div style={{ ...RS.label, marginBottom: 4 }}>Monthly Income</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{p.monthly_income_inr}</div>
+                  </div>
+                )}
+                {p.tier_city && (
+                  <div>
+                    <div style={{ ...RS.label, marginBottom: 4 }}>City Tier</div>
+                    <Chip label={p.tier_city} color="blue" />
+                  </div>
+                )}
+                {p.preferred_payment_method && (
+                  <div>
+                    <div style={{ ...RS.label, marginBottom: 4 }}>Preferred Payment</div>
+                    <div style={{ fontSize: 13, color: "var(--ink-2)" }}>{p.preferred_payment_method}</div>
+                  </div>
+                )}
+                {p.language_preference && (
+                  <div>
+                    <div style={{ ...RS.label, marginBottom: 4 }}>Language</div>
+                    <div style={{ fontSize: 13, color: "var(--ink-2)" }}>{p.language_preference}</div>
+                  </div>
+                )}
+              </div>
+              {p.where_to_find_them_india && p.where_to_find_them_india.length > 0 && (
+                <div>
+                  <div style={{ ...RS.label, marginBottom: 8 }}>🇮🇳 Where to Find Them in India</div>
+                  <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                    {p.where_to_find_them_india.map((w, i) => (
+                      <span key={i} style={{ fontSize: 12, padding: "3px 10px", borderRadius: 99, background: "#FF993315", color: "#cc7a00", border: "1px solid #FF993340", fontWeight: 500 }}>{w}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

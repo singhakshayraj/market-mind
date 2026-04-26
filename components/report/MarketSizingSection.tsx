@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection, IndiaBadge } from "../ui/ReportPrimitives";
 import type { MarketSizing } from "@/lib/schemas";
 
 interface Props {
@@ -33,6 +33,47 @@ export default function MarketSizingSection({ data }: Props) {
           </div>
         ))}
       </div>
+
+      {/* India Intelligence Block */}
+      {d.india_market_size_inr && (
+        <div style={{ background: "#fff8f0", border: "1px solid #FF993340", borderRadius: 12, padding: "18px 20px", marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <IndiaBadge />
+            <span style={{ fontSize: 12, color: "var(--ink-3)" }}>India-specific market data</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
+            <div>
+              <div style={{ ...RS.label, marginBottom: 4 }}>India Market Size</div>
+              <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 22, fontWeight: 400, color: "var(--ink)", letterSpacing: "-0.02em" }}>{d.india_market_size_inr}</div>
+              {d.india_market_size_source && <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 3 }}>Source: {d.india_market_size_source}</div>}
+            </div>
+            {d.india_growth_rate && (
+              <div>
+                <div style={{ ...RS.label, marginBottom: 4 }}>Growth Rate</div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: "var(--green)" }}>{d.india_growth_rate}</div>
+              </div>
+            )}
+            {d.india_key_cities && d.india_key_cities.length > 0 && (
+              <div>
+                <div style={{ ...RS.label, marginBottom: 6 }}>Key Cities</div>
+                <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                  {d.india_key_cities.map((city, i) => <Chip key={i} label={city} color="neutral" />)}
+                </div>
+              </div>
+            )}
+          </div>
+          {d.india_government_schemes && d.india_government_schemes.length > 0 && (
+            <div style={{ marginTop: 12, borderTop: "1px solid #FF993330", paddingTop: 12 }}>
+              <div style={{ ...RS.label, marginBottom: 8 }}>Relevant Government Schemes</div>
+              <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                {d.india_government_schemes.map((scheme, i) => (
+                  <span key={i} style={{ fontSize: 12, padding: "3px 10px", borderRadius: 99, background: "#FF993320", color: "#cc7a00", border: "1px solid #FF993340", fontWeight: 500 }}>{scheme}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <span style={RS.label}>Confidence</span>
