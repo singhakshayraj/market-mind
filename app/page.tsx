@@ -37,7 +37,7 @@ export default function LandingPage() {
         <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
           Describe your business idea in plain English.
           <br />
-          Get MBA-level market research in under 3 minutes.
+          Get MBA-level market research in under 3 minutes — free.
         </p>
       </div>
 
