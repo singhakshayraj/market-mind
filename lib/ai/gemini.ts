@@ -1,12 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY ?? "");
-
 export async function callGemini(
   systemPrompt: string,
   userPrompt: string,
-  timeoutMs = 15000
+  timeoutMs = 25000
 ): Promise<string> {
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GOOGLE_GEMINI_API_KEY is not set");
+
+  const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-pro",
     systemInstruction: systemPrompt,
