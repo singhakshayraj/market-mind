@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { runAIModule } from "@/lib/ai/router";
-import { searchWeb, formatSearchResults } from "@/lib/search/serper";
+import { searchWeb, indiaSearch, formatSearchResults } from "@/lib/search/serper";
+import { buildIndiaSearchQueries, buildIndiaContext } from "@/lib/india/intelligence";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   IdeaDecoderSchema,
@@ -102,13 +103,22 @@ export async function POST(req: NextRequest) {
         const ideaJson = JSON.stringify(ideaResult.result, null, 2);
         const detectedGeography = ideaResult.result.geography;
 
-        // Step 2: Web searches for modules that need them
+        // Step 2: Web searches + India intelligence layer
         send(controller, "progress", { moduleId: "search", status: "running", label: "Searching the web for market data..." });
 
-        const [marketSearch, competitorSearch, trendSearch] = await Promise.allSettled([
+        const isIndia = detectedGeography?.toLowerCase().includes("india");
+
+        // Run standard searches + India-specific searches in parallel
+        const indiaQueries = isIndia
+          ? buildIndiaSearchQueries(ideaResult.result)
+          : [];
+
+        const [marketSearch, competitorSearch, trendSearch, ...indiaSearchResults] = await Promise.allSettled([
           searchWeb(`${ideaResult.result.industry} market size ${detectedGeography} 2024`, detectedGeography),
           searchWeb(`${ideaResult.result.industry} startups competitors ${detectedGeography}`, detectedGeography),
           searchWeb(`${ideaResult.result.industry} trends 2024 2025 ${detectedGeography}`, detectedGeography),
+          // India intelligence searches (only fired for India ideas)
+          ...indiaQueries.map((q) => indiaSearch(q)),
         ]);
 
         const marketSearchText = marketSearch.status === "fulfilled"
@@ -117,6 +127,12 @@ export async function POST(req: NextRequest) {
           ? formatSearchResults(competitorSearch.value) : "No search results available.";
         const trendSearchText = trendSearch.status === "fulfilled"
           ? formatSearchResults(trendSearch.value) : "No search results available.";
+
+        // Build India context block from all India search results
+        const indiaRawResults = indiaSearchResults
+          .filter((r) => r.status === "fulfilled")
+          .flatMap((r) => (r as PromiseFulfilledResult<Awaited<ReturnType<typeof indiaSearch>>>).value);
+        const indiaContext = isIndia ? buildIndiaContext(indiaRawResults) : undefined;
 
         send(controller, "progress", { moduleId: "search", status: "done" });
 
@@ -139,13 +155,13 @@ export async function POST(req: NextRequest) {
         });
 
         const parallelResults = await Promise.allSettled([
-          runAIModule("02-market-sizing", marketPrompt, marketUserPrompt(ideaJson, marketSearchText), MarketSizingSchema),
-          runAIModule("03-customer-profiling", customerPrompt, customerUserPrompt(ideaJson), CustomerProfilingSchema),
-          runAIModule("04-competitor-landscape", competitorPrompt, competitorUserPrompt(ideaJson, competitorSearchText), CompetitorLandscapeSchema),
+          runAIModule("02-market-sizing", marketPrompt, marketUserPrompt(ideaJson, marketSearchText, indiaContext), MarketSizingSchema),
+          runAIModule("03-customer-profiling", customerPrompt, customerUserPrompt(ideaJson, indiaContext), CustomerProfilingSchema),
+          runAIModule("04-competitor-landscape", competitorPrompt, competitorUserPrompt(ideaJson, competitorSearchText, indiaContext), CompetitorLandscapeSchema),
           runAIModule("05-problem-validation", validationPrompt, validationUserPrompt(ideaJson), ProblemValidationSchema),
           runAIModule("06-business-model", businessPrompt, businessUserPrompt(ideaJson), BusinessModelSchema),
-          runAIModule("07-go-to-market", gtmPrompt, gtmUserPrompt(ideaJson), GoToMarketSchema),
-          runAIModule("08-risk-radar", riskPrompt, riskUserPrompt(ideaJson), RiskRadarSchema),
+          runAIModule("07-go-to-market", gtmPrompt, gtmUserPrompt(ideaJson, indiaContext), GoToMarketSchema),
+          runAIModule("08-risk-radar", riskPrompt, riskUserPrompt(ideaJson, indiaContext), RiskRadarSchema),
           runAIModule("09-trend-timing", trendPrompt, trendUserPrompt(ideaJson, trendSearchText), TrendTimingSchema),
           runAIModule("10-investor-lens", investorPrompt, investorUserPrompt(ideaJson), InvestorLensSchema),
           runAIModule("11-digital-marketing", digitalMarketingPrompt, digitalMarketingUserPrompt(ideaJson, JSON.stringify(modules["03-customer-profiling"] ?? {}, null, 2)), DigitalMarketingSchema),

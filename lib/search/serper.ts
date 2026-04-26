@@ -41,6 +41,25 @@ export function formatSearchResults(results: SerperResult[]): string {
     .join("\n\n");
 }
 
+// India-specific search — always targets google.co.in, returns 8 results
+export async function indiaSearch(query: string): Promise<SerperResult[]> {
+  const res = await fetch("https://google.serper.dev/search", {
+    method: "POST",
+    headers: {
+      "X-API-KEY": process.env.SERPER_API_KEY ?? "",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ q: query, gl: "in", hl: "en", num: 8 }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Serper India API error: ${res.status}`);
+  }
+
+  const data: SerperResponse = await res.json();
+  return (data.organic ?? []).slice(0, 8);
+}
+
 function geographyToCountryCode(geography?: string): string {
   if (!geography) return "us";
   const map: Record<string, string> = {

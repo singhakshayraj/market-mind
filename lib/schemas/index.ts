@@ -24,6 +24,12 @@ export const MarketSizingSchema = z.object({
   methodology: z.string(),
   data_sources: z.array(z.string()),
   confidence_level: z.enum(["low", "medium", "high"]),
+  // India Intelligence Layer fields (optional so non-India reports still pass)
+  india_market_size_inr: z.string().optional(),
+  india_market_size_source: z.string().optional(),
+  india_growth_rate: z.string().optional(),
+  india_key_cities: z.array(z.string()).optional(),
+  india_government_schemes: z.array(z.string()).optional(),
   what_this_means_for_you: z.string(),
 });
 export type MarketSizing = z.infer<typeof MarketSizingSchema>;
@@ -41,6 +47,12 @@ export const CustomerProfilingSchema = z.object({
       where_to_find_them: z.array(z.string()),
       what_they_read_watch: z.array(z.string()),
       willingness_to_pay: z.string(),
+      // India Intelligence Layer fields
+      monthly_income_inr: z.string().optional(),
+      tier_city: z.enum(["Tier 1", "Tier 2", "Tier 3"]).optional(),
+      preferred_payment_method: z.string().optional(),
+      language_preference: z.string().optional(),
+      where_to_find_them_india: z.array(z.string()).optional(),
     })
   ),
   early_adopter_profile: z.string(),
@@ -63,6 +75,12 @@ export const CompetitorLandscapeSchema = z.object({
       threat_level: z.enum(["low", "medium", "high"]),
       what_you_can_learn_from_them: z.string(),
       url: z.string().optional(),
+      // India Intelligence Layer fields
+      indian_player: z.boolean().optional(),
+      funding_stage_india: z.string().optional(),
+      indian_vc_backed: z.boolean().optional(),
+      geographic_presence: z.array(z.string()).optional(),
+      tracxn_crunchbase_hint: z.string().optional(),
     })
   ),
   whitespace_opportunity: z.string(),
@@ -130,6 +148,10 @@ export const GoToMarketSchema = z.object({
   ),
   first_customer_script: z.string(),
   key_message: z.string(),
+  // India Intelligence Layer fields
+  indian_digital_channels: z.array(z.string()).optional(),
+  offline_india_channels: z.array(z.string()).optional(),
+  india_first_customer_playbook: z.string().optional(),
   what_this_means_for_you: z.string(),
 });
 export type GoToMarket = z.infer<typeof GoToMarketSchema>;
@@ -156,6 +178,14 @@ export const RiskRadarSchema = z.object({
     })
   ),
   biggest_risk_summary: z.string(),
+  // India Intelligence Layer — mandatory India regulatory risks
+  regulatory_risks: z.array(z.object({
+    risk: z.string(),
+    governing_body: z.string(),
+    severity: z.enum(["low", "medium", "high", "fatal"]),
+    plain_english_explanation: z.string(),
+    what_to_do: z.string(),
+  })).optional(),
   what_this_means_for_you: z.string(),
 });
 export type RiskRadar = z.infer<typeof RiskRadarSchema>;
