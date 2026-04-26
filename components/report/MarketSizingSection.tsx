@@ -1,61 +1,58 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { MarketSizing } from "@/lib/schemas";
 
 interface Props {
   data?: { result: MarketSizing; modelUsed: string; error?: string };
 }
 
-const confidenceColors = {
-  low: "text-red-400 bg-red-400/10",
-  medium: "text-amber-400 bg-amber-400/10",
-  high: "text-emerald-400 bg-emerald-400/10",
-};
-
 export default function MarketSizingSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Market Sizing" emoji="📊" error={data.error}><></></SectionCard>;
+  if (!data) return <ErrorSection number={2} label="Market Sizing" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={2} label="Market Sizing" error={data.error} />;
+  const d = data.result;
 
-  const r = data.result;
+  const confidenceColor = d.confidence_level === "high" ? "green" : d.confidence_level === "medium" ? "amber" : "red";
+
+  const markets = [
+    { acronym: "TAM", name: "Total Addressable Market", sub: "Everyone who could ever buy this", val: d.tam },
+    { acronym: "SAM", name: "Serviceable Addressable Market", sub: "The segment you can reach", val: d.sam },
+    { acronym: "SOM", name: "Serviceable Obtainable Market", sub: "Your realistic first-year slice", val: d.som },
+  ];
+
   return (
-    <SectionCard title="Market Sizing" emoji="📊" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {[
-            { label: "Total Market (TAM)", sub: "Everyone who could ever buy this", data: r.tam, color: "border-blue-500/30 bg-blue-500/5" },
-            { label: "Your Market (SAM)", sub: "The segment you can realistically reach", data: r.sam, color: "border-indigo-500/30 bg-indigo-500/5" },
-            { label: "Year 1 Target (SOM)", sub: "Your realistic first-year slice", data: r.som, color: "border-emerald-500/30 bg-emerald-500/5" },
-          ].map(({ label, sub, data: mData, color }) => (
-            <div key={label} className={`border ${color} rounded-xl p-4`}>
-              <div className="text-xs text-slate-400 mb-1">{sub}</div>
-              <div className="text-2xl font-bold text-white mb-2">{mData.value}</div>
-              <div className="text-xs font-semibold text-slate-300 mb-1">{label}</div>
-              <p className="text-slate-400 text-xs leading-relaxed">{mData.explanation}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span className="text-slate-400 text-sm">Data confidence:</span>
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${confidenceColors[r.confidence_level]}`}>
-            {r.confidence_level}
-          </span>
-        </div>
-
-        {r.data_sources.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Sources</div>
-            <ul className="space-y-1">
-              {r.data_sources.map((s, i) => (
-                <li key={i} className="text-slate-400 text-xs flex items-start gap-1.5">
-                  <span className="text-slate-500 shrink-0">[{i + 1}]</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
+    <SectionShell id="market-sizing" number={2} title="Market Sizing" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+        {markets.map(({ acronym, name, sub, val }) => (
+          <div key={acronym} style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 12, padding: "18px 20px" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--accent)", marginBottom: 4 }}>{acronym}</div>
+            <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: "clamp(20px,2vw,26px)", fontWeight: 400, color: "var(--ink)", letterSpacing: "-0.02em", marginBottom: 4 }}>{val.value}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)", marginBottom: 6 }}>{name}</div>
+            <p style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.5 }}>{sub}</p>
+            <p style={{ fontSize: 12, color: "var(--ink-2)", lineHeight: 1.5, marginTop: 8 }}>{val.explanation}</p>
           </div>
-        )}
+        ))}
       </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <span style={RS.label}>Confidence</span>
+        <Chip label={d.confidence_level} color={confidenceColor as "green" | "amber" | "red"} />
+      </div>
+
+      {d.data_sources.length > 0 && (
+        <div>
+          <div style={{ ...RS.label, marginBottom: 8 }}>Sources</div>
+          <ul style={{ display: "flex", flexDirection: "column" as const, gap: 4 }}>
+            {d.data_sources.map((s, i) => (
+              <li key={i} style={{ fontSize: 12, color: "var(--ink-3)", display: "flex", gap: 6 }}>
+                <span style={{ color: "var(--ink-3)", flexShrink: 0 }}>[{i + 1}]</span>{s}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }

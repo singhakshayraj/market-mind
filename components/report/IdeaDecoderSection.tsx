@@ -1,4 +1,6 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { IdeaDecoder } from "@/lib/schemas";
 
 interface Props {
@@ -6,51 +8,48 @@ interface Props {
 }
 
 export default function IdeaDecoderSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Idea Decoder" emoji="💡" error={data.error}><></></SectionCard>;
+  if (!data) return <ErrorSection number={1} label="Idea Decoder" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={1} label="Idea Decoder" error={data.error} />;
+  const d = data.result;
 
-  const r = data.result;
+  const rows = [
+    { icon: "🎯", label: "Problem", text: d.problem_statement },
+    { icon: "💡", label: "Solution", text: d.solution },
+    { icon: "👤", label: "Target Customer", text: d.target_customer },
+    { icon: "⭐", label: "Value Proposition", text: d.value_proposition },
+  ];
+
   return (
-    <SectionCard title="Idea Decoder" emoji="💡" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        {[
-          { label: "The Problem", value: r.problem_statement },
-          { label: "Your Solution", value: r.solution },
-          { label: "Who It's For", value: r.target_customer },
-          { label: "Why People Will Choose You", value: r.value_proposition },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-slate-700/30 rounded-xl p-4">
-            <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">{label}</div>
-            <p className="text-white text-sm leading-relaxed">{value}</p>
+    <SectionShell id="idea-decoder" number={1} title="Idea Decoder" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12, marginBottom: 20 }}>
+        {rows.map((r) => (
+          <div key={r.label} style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 10, padding: "16px 18px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 16 }}>{r.icon}</span>
+              <span style={RS.label}>{r.label}</span>
+            </div>
+            <p style={RS.body}>{r.text}</p>
           </div>
         ))}
+      </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-700/30 rounded-xl p-4">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Industry</div>
-            <p className="text-white text-sm capitalize">{r.industry}</p>
-          </div>
-          <div className="bg-slate-700/30 rounded-xl p-4">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Geography</div>
-            <p className="text-white text-sm">{r.geography}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+        <span style={RS.label}>Stage</span>
+        <Chip label={d.stage} color="blue" />
+        {d.industry && <><span style={RS.label}>Industry</span><Chip label={d.industry} color="neutral" /></>}
+        {d.geography && <><span style={RS.label}>Geography</span><Chip label={d.geography} color="neutral" /></>}
+      </div>
+
+      {d.key_assumptions.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ ...RS.label, marginBottom: 10 }}>Key Assumptions</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {d.key_assumptions.map((a, i) => <Chip key={i} label={a} color="amber" />)}
           </div>
         </div>
+      )}
 
-        {r.key_assumptions.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Key Assumptions</div>
-            <ul className="space-y-2">
-              {r.key_assumptions.map((a, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                  <span className="text-amber-400 mt-0.5 shrink-0">→</span>
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }

@@ -1,4 +1,7 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { useState } from "react";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { CustomerProfiling } from "@/lib/schemas";
 
 interface Props {
@@ -6,71 +9,84 @@ interface Props {
 }
 
 export default function CustomerProfilingSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Customer Profiles" emoji="👥" error={data.error}><></></SectionCard>;
+  const [activeTab, setActiveTab] = useState(0);
+  if (!data) return <ErrorSection number={3} label="Customer Profiles" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={3} label="Customer Profiles" error={data.error} />;
+  const d = data.result;
+  const p = d.personas[activeTab];
 
-  const r = data.result;
   return (
-    <SectionCard title="Customer Profiles" emoji="👥" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        {r.personas.map((p, i) => (
-          <div key={i} className="border border-slate-700 rounded-xl p-5">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="font-bold text-white text-base">{p.name}</h3>
-                <p className="text-slate-400 text-sm">{p.occupation} · {p.age_range}</p>
-              </div>
-              <div className="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full">
-                Persona {i + 1}
-              </div>
-            </div>
+    <SectionShell id="customer-profiling" number={3} title="Customer Profiles" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      {/* Persona tabs */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+        {d.personas.map((persona, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveTab(i)}
+            style={{
+              padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", border: "1px solid",
+              background: activeTab === i ? "var(--accent)" : "var(--bg-card)",
+              color: activeTab === i ? "#fff" : "var(--ink-2)",
+              borderColor: activeTab === i ? "var(--accent)" : "var(--rule)",
+              transition: "all 0.15s",
+            }}
+          >
+            {persona.name}
+          </button>
+        ))}
+      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Goals</div>
-                <ul className="space-y-1">
-                  {p.goals.map((g, j) => (
-                    <li key={j} className="text-slate-300 text-sm flex items-start gap-1.5">
-                      <span className="text-emerald-400 shrink-0">✓</span>{g}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Pain Points</div>
-                <ul className="space-y-1">
-                  {p.pain_points.map((pain, j) => (
-                    <li key={j} className="text-slate-300 text-sm flex items-start gap-1.5">
-                      <span className="text-red-400 shrink-0">✗</span>{pain}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+      {p && (
+        <div style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 12, padding: "22px 24px", marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 20, fontWeight: 400, color: "var(--ink)", marginBottom: 4 }}>{p.name}</div>
+            <div style={{ fontSize: 13, color: "var(--ink-3)" }}>{p.occupation} · {p.age_range}</div>
+          </div>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">Where to Find Them</div>
-                <ul className="space-y-1">
-                  {p.where_to_find_them.map((w, j) => (
-                    <li key={j} className="text-slate-400 text-xs">→ {w}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Willingness to Pay</div>
-                <p className="text-slate-300 text-sm">{p.willingness_to_pay}</p>
-              </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
+            <div>
+              <div style={{ ...RS.label, marginBottom: 8, color: "oklch(38% 0.14 155)" }}>Goals</div>
+              <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                {p.goals.map((g, i) => (
+                  <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8 }}>
+                    <span style={{ color: "var(--green)", flexShrink: 0 }}>✓</span>{g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <div style={{ ...RS.label, marginBottom: 8, color: "oklch(40% 0.16 22)" }}>Pain Points</div>
+              <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                {p.pain_points.map((pain, i) => (
+                  <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8 }}>
+                    <span style={{ color: "oklch(50% 0.16 22)", flexShrink: 0 }}>✗</span>{pain}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        ))}
 
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
-          <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">Your First Customer</div>
-          <p className="text-slate-300 text-sm leading-relaxed">{r.early_adopter_profile}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div>
+              <div style={{ ...RS.label, marginBottom: 8 }}>Where to Find Them</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {p.where_to_find_them.map((w, i) => <Chip key={i} label={w} color="blue" />)}
+              </div>
+            </div>
+            <div>
+              <div style={{ ...RS.label, marginBottom: 8 }}>Willingness to Pay</div>
+              <p style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.6 }}>{p.willingness_to_pay}</p>
+            </div>
+          </div>
         </div>
+      )}
+
+      <div style={{ padding: "16px 18px", background: "oklch(96% 0.06 80)", border: "1px solid oklch(88% 0.09 80)", borderRadius: 10, marginBottom: 4 }}>
+        <div style={{ ...RS.label, color: "oklch(42% 0.14 80)", marginBottom: 6 }}>Your Early Adopter</div>
+        <p style={{ fontSize: 14, color: "var(--ink)", lineHeight: 1.65 }}>{d.early_adopter_profile}</p>
       </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }

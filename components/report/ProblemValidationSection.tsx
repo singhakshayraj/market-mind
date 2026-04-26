@@ -1,4 +1,6 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { SectionShell, WTMFYBox, ScoreBar, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { ProblemValidation } from "@/lib/schemas";
 
 interface Props {
@@ -6,78 +8,68 @@ interface Props {
 }
 
 const verdictConfig = {
-  weak: { label: "Weak Problem", color: "text-red-400", bg: "bg-red-500/10 border-red-500/30" },
-  moderate: { label: "Moderate Problem", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/30" },
-  strong: { label: "Strong Problem", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/30" },
-  very_strong: { label: "Very Strong Problem", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/30" },
+  weak:       { label: "Weak Problem",       bg: "oklch(96% 0.05 22)",  border: "oklch(88% 0.08 22)",  text: "oklch(40% 0.16 22)" },
+  moderate:   { label: "Moderate Problem",   bg: "oklch(96% 0.06 80)",  border: "oklch(88% 0.09 80)",  text: "oklch(42% 0.14 80)" },
+  strong:     { label: "Strong Problem",     bg: "oklch(95% 0.06 155)", border: "oklch(85% 0.08 155)", text: "oklch(38% 0.14 155)" },
+  very_strong:{ label: "Very Strong Problem",bg: "var(--accent-lt)",    border: "var(--accent-md)",    text: "var(--accent)" },
 };
 
 export default function ProblemValidationSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Problem Validation" emoji="✅" error={data.error}><></></SectionCard>;
+  if (!data) return <ErrorSection number={5} label="Problem Validation" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={5} label="Problem Validation" error={data.error} />;
+  const d = data.result;
+  const vc = verdictConfig[d.verdict];
 
-  const r = data.result;
-  const vc = verdictConfig[r.verdict];
   return (
-    <SectionCard title="Problem Validation Score" emoji="✅" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        {/* Score */}
-        <div className={`border ${vc.bg} rounded-xl p-5 flex items-center gap-5`}>
-          <div className="text-center">
-            <div className={`text-5xl font-bold ${vc.color}`}>{r.score}</div>
-            <div className="text-slate-400 text-xs mt-1">out of 100</div>
-          </div>
-          <div>
-            <div className={`font-bold text-lg ${vc.color}`}>{vc.label}</div>
-            <div className="h-2 bg-slate-700 rounded-full w-48 mt-2">
-              <div
-                className={`h-full rounded-full transition-all ${r.score >= 70 ? "bg-emerald-500" : r.score >= 50 ? "bg-amber-500" : "bg-red-500"}`}
-                style={{ width: `${r.score}%` }}
-              />
-            </div>
-          </div>
+    <SectionShell id="problem-validation" number={5} title="Problem Validation Score" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      {/* Score hero */}
+      <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "24px 28px", border: `1px solid ${vc.border}`, background: vc.bg, borderRadius: 12, marginBottom: 24 }}>
+        <div style={{ textAlign: "center", flexShrink: 0 }}>
+          <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 56, fontWeight: 400, color: vc.text, lineHeight: 1 }}>{d.score}</div>
+          <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 4 }}>out of 100</div>
         </div>
-
-        {/* Dimensions */}
-        <div className="space-y-2">
-          {r.dimensions.map((d, i) => (
-            <div key={i} className="bg-slate-700/30 rounded-lg p-3">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-white">{d.name}</span>
-                <span className="text-sm font-bold text-indigo-300">{d.score}/10</span>
-              </div>
-              <div className="h-1.5 bg-slate-600 rounded-full mb-2">
-                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${d.score * 10}%` }} />
-              </div>
-              <p className="text-slate-400 text-xs">{d.reasoning}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Evidence For</div>
-            <ul className="space-y-1.5">
-              {r.key_evidence_for.map((e, i) => (
-                <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-emerald-400 shrink-0">✓</span>{e}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Evidence Against</div>
-            <ul className="space-y-1.5">
-              {r.key_evidence_against.map((e, i) => (
-                <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-red-400 shrink-0">✗</span>{e}
-                </li>
-              ))}
-            </ul>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: vc.text, marginBottom: 10 }}>{vc.label}</div>
+          <div style={{ height: 6, background: "var(--rule)", borderRadius: 99, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${d.score}%`, background: vc.text, borderRadius: 99, transition: "width 1s cubic-bezier(0.16,1,0.3,1)" }} />
           </div>
         </div>
       </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+
+      {/* Dimensions */}
+      <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 24 }}>
+        {d.dimensions.map((dim, i) => (
+          <div key={i}>
+            <ScoreBar label={dim.name} value={dim.score} max={10} color="var(--accent)" />
+            <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 4, lineHeight: 1.5 }}>{dim.reasoning}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 4 }}>
+        <div>
+          <div style={{ ...RS.label, color: "oklch(38% 0.14 155)", marginBottom: 8 }}>Evidence For</div>
+          <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+            {d.key_evidence_for.map((e, i) => (
+              <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                <span style={{ color: "var(--green)", flexShrink: 0 }}>✓</span>{e}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div style={{ ...RS.label, color: "oklch(40% 0.16 22)", marginBottom: 8 }}>Evidence Against</div>
+          <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+            {d.key_evidence_against.map((e, i) => (
+              <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                <span style={{ color: "oklch(50% 0.16 22)", flexShrink: 0 }}>✗</span>{e}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }

@@ -1,83 +1,97 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { useState } from "react";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { BusinessModel } from "@/lib/schemas";
 
 interface Props {
   data?: { result: BusinessModel; modelUsed: string; error?: string };
 }
 
-const complexityColors = {
-  low: "text-emerald-400 bg-emerald-400/10",
-  medium: "text-amber-400 bg-amber-400/10",
-  high: "text-red-400 bg-red-400/10",
-};
-
 export default function BusinessModelSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Business Model Options" emoji="💰" error={data.error}><></></SectionCard>;
+  const [activeTab, setActiveTab] = useState(0);
+  if (!data) return <ErrorSection number={6} label="Business Model" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={6} label="Business Model" error={data.error} />;
+  const d = data.result;
+  const m = d.models[activeTab];
 
-  const r = data.result;
+  const complexityColor = { low: "green", medium: "amber", high: "red" } as const;
+
   return (
-    <SectionCard title="Business Model Options" emoji="💰" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        {r.models.map((m, i) => (
-          <div
-            key={i}
-            className={`border rounded-xl p-5 ${m.name === r.recommended_model
-              ? "border-indigo-500/50 bg-indigo-500/5"
-              : "border-slate-700 bg-slate-700/20"
-            }`}
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-white">{m.name}</h3>
-                  {m.name === r.recommended_model && (
-                    <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full">Recommended</span>
-                  )}
-                </div>
-                <p className="text-slate-400 text-sm mt-1">{m.description}</p>
-              </div>
-              <div className="flex flex-col items-end gap-1.5 shrink-0 ml-3">
-                <span className={`text-xs px-2 py-0.5 rounded-full ${complexityColors[m.complexity]}`}>
-                  {m.complexity} complexity
-                </span>
-                <span className="text-xs text-slate-400">{m.estimated_time_to_revenue}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <div className="text-xs font-semibold text-emerald-400 mb-1">Pros</div>
-                <ul className="space-y-0.5">
-                  {m.pros.map((p, j) => (
-                    <li key={j} className="text-slate-300 text-xs flex items-start gap-1"><span className="text-emerald-400">+</span>{p}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-red-400 mb-1">Cons</div>
-                <ul className="space-y-0.5">
-                  {m.cons.map((c, j) => (
-                    <li key={j} className="text-slate-300 text-xs flex items-start gap-1"><span className="text-red-400">−</span>{c}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {m.example_companies.length > 0 && (
-              <div className="mt-3 text-xs text-slate-500">
-                Similar to: {m.example_companies.join(", ")}
-              </div>
-            )}
-          </div>
-        ))}
-
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
-          <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">Unit Economics Example</div>
-          <p className="text-white text-sm leading-relaxed">{r.unit_economics_example}</p>
-        </div>
+    <SectionShell id="business-model" number={6} title="Business Model Options" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      {/* Model tabs */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+        {d.models.map((model, i) => {
+          const isRec = model.name === d.recommended_model;
+          const isActive = activeTab === i;
+          return (
+            <button
+              key={i}
+              onClick={() => setActiveTab(i)}
+              style={{
+                padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", border: "1px solid",
+                background: isActive ? "var(--accent)" : isRec ? "var(--accent-lt)" : "var(--bg-card)",
+                color: isActive ? "#fff" : isRec ? "var(--accent)" : "var(--ink-2)",
+                borderColor: isActive ? "var(--accent)" : isRec ? "var(--accent-md)" : "var(--rule)",
+                transition: "all 0.15s",
+              }}
+            >
+              {model.name}
+              {isRec && !isActive && <span style={{ marginLeft: 6, fontSize: 10 }}>★</span>}
+            </button>
+          );
+        })}
       </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+
+      {m && (
+        <div style={{ background: "#fff", border: `1px solid ${m.name === d.recommended_model ? "var(--accent-md)" : "var(--rule)"}`, borderRadius: 12, padding: "20px 22px", marginBottom: 20 }}>
+          {m.name === d.recommended_model && (
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "var(--accent)", marginBottom: 8 }}>★ Recommended Model</div>
+          )}
+          <p style={{ fontSize: 14, color: "var(--ink-2)", lineHeight: 1.65, marginBottom: 16 }}>{m.description}</p>
+
+          <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+            <Chip label={`${m.complexity} complexity`} color={complexityColor[m.complexity]} />
+            <Chip label={m.estimated_time_to_revenue} color="neutral" />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
+            <div>
+              <div style={{ ...RS.label, color: "oklch(38% 0.14 155)", marginBottom: 8 }}>Pros</div>
+              <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                {m.pros.map((p, i) => (
+                  <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 6 }}>
+                    <span style={{ color: "var(--green)", flexShrink: 0 }}>+</span>{p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <div style={{ ...RS.label, color: "oklch(40% 0.16 22)", marginBottom: 8 }}>Cons</div>
+              <ul style={{ display: "flex", flexDirection: "column" as const, gap: 6 }}>
+                {m.cons.map((c, i) => (
+                  <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 6 }}>
+                    <span style={{ color: "oklch(50% 0.16 22)", flexShrink: 0 }}>−</span>{c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {m.example_companies.length > 0 && (
+            <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
+              Similar to: {m.example_companies.join(", ")}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ padding: "16px 18px", background: "oklch(96% 0.06 80)", border: "1px solid oklch(88% 0.09 80)", borderRadius: 10 }}>
+        <div style={{ ...RS.label, color: "oklch(42% 0.14 80)", marginBottom: 6 }}>Unit Economics Example</div>
+        <p style={{ fontSize: 14, color: "var(--ink)", lineHeight: 1.65 }}>{d.unit_economics_example}</p>
+      </div>
+
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }

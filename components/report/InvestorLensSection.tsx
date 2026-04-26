@@ -1,4 +1,6 @@
-import SectionCard, { WhatThisMeansBox } from "@/components/ui/SectionCard";
+"use client";
+
+import { SectionShell, WTMFYBox, ScoreBar, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
 import type { InvestorLens } from "@/lib/schemas";
 
 interface Props {
@@ -6,92 +8,87 @@ interface Props {
 }
 
 export default function InvestorLensSection({ data }: Props) {
-  if (!data) return null;
-  if (data.error) return <SectionCard title="Investor Lens" emoji="🔭" error={data.error}><></></SectionCard>;
+  if (!data) return <ErrorSection number={10} label="Investor Lens" error="Module data not available" />;
+  if (data.error) return <ErrorSection number={10} label="Investor Lens" error={data.error} />;
+  const d = data.result;
 
-  const r = data.result;
-  const scoreColor = r.vc_attractiveness_score >= 7 ? "text-emerald-400" :
-    r.vc_attractiveness_score >= 5 ? "text-amber-400" : "text-red-400";
+  const scoreColor = d.vc_attractiveness_score >= 7 ? "oklch(50% 0.18 155)" : d.vc_attractiveness_score >= 5 ? "var(--amber)" : "oklch(50% 0.16 22)";
 
   return (
-    <SectionCard title="Investor Lens" emoji="🔭" modelUsed={data.modelUsed} summary={r.plain_english_summary}>
-      <div className="space-y-4 mt-4">
-        {/* Score */}
-        <div className="flex items-center gap-5 p-4 bg-slate-700/30 rounded-xl">
-          <div className="text-center">
-            <div className={`text-4xl font-bold ${scoreColor}`}>{r.vc_attractiveness_score}/10</div>
-            <div className="text-slate-400 text-xs mt-1">VC Attractiveness</div>
+    <SectionShell id="investor-lens" number={10} title="Investor Lens" summary={d.plain_english_summary} modelUsed={data.modelUsed}>
+      {/* VC Score */}
+      <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "20px 24px", background: "#fff", border: "1px solid var(--rule)", borderRadius: 12, marginBottom: 24 }}>
+        <div style={{ textAlign: "center", flexShrink: 0 }}>
+          <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 48, fontWeight: 400, color: scoreColor, lineHeight: 1 }}>
+            {d.vc_attractiveness_score}
           </div>
-          <div>
-            <div className="text-white font-semibold">{r.thesis_fit}</div>
-            <div className="h-2 bg-slate-600 rounded-full w-40 mt-2">
-              <div
-                className={`h-full rounded-full ${r.vc_attractiveness_score >= 7 ? "bg-emerald-500" : r.vc_attractiveness_score >= 5 ? "bg-amber-500" : "bg-red-500"}`}
-                style={{ width: `${r.vc_attractiveness_score * 10}%` }}
-              />
-            </div>
-          </div>
+          <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 2 }}>out of 10</div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">What VCs Will Love</div>
-            <ul className="space-y-1.5">
-              {r.what_vcs_love.map((w, i) => (
-                <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-emerald-400 shrink-0">✓</span>{w}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Red Flags</div>
-            <ul className="space-y-1.5">
-              {r.red_flags.map((rf, i) => (
-                <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-red-400 shrink-0">✗</span>{rf}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div>
-          <div className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Questions VCs Will Ask You</div>
-          <ol className="space-y-2">
-            {r.questions_vcs_will_ask.map((q, i) => (
-              <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                <span className="text-amber-400 font-bold shrink-0">{i + 1}.</span>{q}
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        {r.comparable_funded_companies.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">Comparable Funded Companies</div>
-            <div className="space-y-2">
-              {r.comparable_funded_companies.map((c, i) => (
-                <div key={i} className="bg-slate-700/30 rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white text-sm">{c.name}</span>
-                    <span className="text-xs text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded">{c.funding}</span>
-                  </div>
-                  <p className="text-slate-400 text-xs mt-1">{c.relevance}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className={`border rounded-xl p-4 ${r.bootstrappable ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/30 bg-amber-500/5"}`}>
-          <div className={`text-xs font-semibold uppercase tracking-wider mb-1 ${r.bootstrappable ? "text-emerald-400" : "text-amber-400"}`}>
-            {r.bootstrappable ? "Bootstrappable" : "Likely Needs Funding"}
-          </div>
-          <p className="text-slate-300 text-sm leading-relaxed">{r.bootstrappable_reason}</p>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginBottom: 10 }}>{d.thesis_fit}</div>
+          <ScoreBar label="VC Attractiveness" value={d.vc_attractiveness_score} max={10} color={scoreColor} />
         </div>
       </div>
-      <WhatThisMeansBox text={r.what_this_means_for_you} />
-    </SectionCard>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
+        <div>
+          <div style={{ ...RS.label, color: "oklch(38% 0.14 155)", marginBottom: 10 }}>What VCs Will Love</div>
+          <ul style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+            {d.what_vcs_love.map((w, i) => (
+              <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                <span style={{ color: "var(--green)", flexShrink: 0 }}>✓</span>{w}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div style={{ ...RS.label, color: "oklch(40% 0.16 22)", marginBottom: 10 }}>Red Flags</div>
+          <ul style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+            {d.red_flags.map((rf, i) => (
+              <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                <span style={{ color: "oklch(50% 0.16 22)", flexShrink: 0 }}>✗</span>{rf}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ ...RS.label, color: "oklch(42% 0.14 80)", marginBottom: 10 }}>Questions VCs Will Ask You</div>
+        <ol style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+          {d.questions_vcs_will_ask.map((q, i) => (
+            <li key={i} style={{ fontSize: 13, color: "var(--ink-2)", display: "flex", gap: 10, lineHeight: 1.5 }}>
+              <span style={{ fontWeight: 700, color: "var(--amber)", flexShrink: 0, minWidth: 18 }}>{i + 1}.</span>{q}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {d.comparable_funded_companies.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ ...RS.label, marginBottom: 10 }}>Comparable Funded Companies</div>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+            {d.comparable_funded_companies.map((c, i) => (
+              <div key={i} style={{ background: "#fff", border: "1px solid var(--rule)", borderRadius: 10, padding: "12px 16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{c.name}</span>
+                  <Chip label={c.funding} color="blue" />
+                </div>
+                <p style={{ fontSize: 12, color: "var(--ink-3)", lineHeight: 1.5 }}>{c.relevance}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ padding: "14px 18px", background: d.bootstrappable ? "var(--green-lt)" : "oklch(96% 0.06 80)", border: `1px solid ${d.bootstrappable ? "oklch(85% 0.08 155)" : "oklch(88% 0.09 80)"}`, borderRadius: 10 }}>
+        <div style={{ ...RS.label, color: d.bootstrappable ? "oklch(38% 0.14 155)" : "oklch(42% 0.14 80)", marginBottom: 6 }}>
+          {d.bootstrappable ? "Bootstrappable" : "Likely Needs Funding"}
+        </div>
+        <p style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.6 }}>{d.bootstrappable_reason}</p>
+      </div>
+
+      <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
+    </SectionShell>
   );
 }
