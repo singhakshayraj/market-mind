@@ -33,7 +33,7 @@ const S = StyleSheet.create({
   coverMetaItem:{ fontSize: 10, color: "#6b7280" },
   coverMetaVal: { fontSize: 10, color: "#d1d5db", fontFamily: "Helvetica-Bold" },
   // section
-  sectionWrap: { marginBottom: 28, paddingBottom: 24, borderBottomWidth: 1, borderBottomColor: C.rule, borderBottomStyle: "solid" },
+  sectionWrap: { marginBottom: 0 },
   moduleLabel: { fontSize: 8, color: C.accent, letterSpacing: 1.5, textTransform: "uppercase", fontFamily: "Helvetica-Bold", marginBottom: 4 },
   sectionTitle:{ fontSize: 18, color: C.ink, fontFamily: "Helvetica-Bold", letterSpacing: -0.3, marginBottom: 6 },
   summary:     { fontSize: 10, color: C.ink2, lineHeight: 1.7, marginBottom: 14 },
@@ -513,20 +513,18 @@ export function ReportDocument({ report }: { report: Record<string, any> }) {
         </Text>
       </Page>
 
-      {/* Report pages */}
-      <Page size="A4" style={S.page} wrap>
-        {modules["01-idea-decoder"]?.result && <IdeaDecoder d={modules["01-idea-decoder"].result} />}
-        {modules["02-market-sizing"]?.result && <MarketSizing d={modules["02-market-sizing"].result} />}
-        {modules["03-customer-profiling"]?.result && <CustomerProfiling d={modules["03-customer-profiling"].result} />}
-        {modules["04-competitor-landscape"]?.result && <CompetitorLandscape d={modules["04-competitor-landscape"].result} />}
-        {modules["05-problem-validation"]?.result && <ProblemValidation d={modules["05-problem-validation"].result} />}
-        {modules["06-business-model"]?.result && <BusinessModel d={modules["06-business-model"].result} />}
-        {modules["07-go-to-market"]?.result && <GoToMarket d={modules["07-go-to-market"].result} />}
-        {modules["08-risk-radar"]?.result && <RiskRadar d={modules["08-risk-radar"].result} />}
-        {modules["09-trend-timing"]?.result && <TrendTiming d={modules["09-trend-timing"].result} />}
-        {modules["10-investor-lens"]?.result && <InvestorLens d={modules["10-investor-lens"].result} />}
-        {modules["11-digital-marketing"]?.result && <DigitalMarketing d={modules["11-digital-marketing"].result} />}
-      </Page>
+      {/* One page per module so content never overlaps */}
+      {modules["01-idea-decoder"]?.result && <Page size="A4" style={S.page}><IdeaDecoder d={modules["01-idea-decoder"].result} /></Page>}
+      {modules["02-market-sizing"]?.result && <Page size="A4" style={S.page}><MarketSizing d={modules["02-market-sizing"].result} /></Page>}
+      {modules["03-customer-profiling"]?.result && <Page size="A4" style={S.page} wrap><CustomerProfiling d={modules["03-customer-profiling"].result} /></Page>}
+      {modules["04-competitor-landscape"]?.result && <Page size="A4" style={S.page} wrap><CompetitorLandscape d={modules["04-competitor-landscape"].result} /></Page>}
+      {modules["05-problem-validation"]?.result && <Page size="A4" style={S.page} wrap><ProblemValidation d={modules["05-problem-validation"].result} /></Page>}
+      {modules["06-business-model"]?.result && <Page size="A4" style={S.page} wrap><BusinessModel d={modules["06-business-model"].result} /></Page>}
+      {modules["07-go-to-market"]?.result && <Page size="A4" style={S.page} wrap><GoToMarket d={modules["07-go-to-market"].result} /></Page>}
+      {modules["08-risk-radar"]?.result && <Page size="A4" style={S.page} wrap><RiskRadar d={modules["08-risk-radar"].result} /></Page>}
+      {modules["09-trend-timing"]?.result && <Page size="A4" style={S.page} wrap><TrendTiming d={modules["09-trend-timing"].result} /></Page>}
+      {modules["10-investor-lens"]?.result && <Page size="A4" style={S.page} wrap><InvestorLens d={modules["10-investor-lens"].result} /></Page>}
+      {modules["11-digital-marketing"]?.result && <Page size="A4" style={S.page} wrap><DigitalMarketing d={modules["11-digital-marketing"].result} /></Page>}
     </Document>
   );
 }
