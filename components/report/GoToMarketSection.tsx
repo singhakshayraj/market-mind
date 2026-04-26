@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionShell, WTMFYBox, RS, ErrorSection } from "../ui/ReportPrimitives";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection, IndiaBadge } from "../ui/ReportPrimitives";
 import type { GoToMarket } from "@/lib/schemas";
 
 interface Props {
@@ -75,6 +75,45 @@ export default function GoToMarketSection({ data }: Props) {
         <span style={{ ...RS.label, marginRight: 8 }}>Key Message</span>
         <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>{d.key_message}</span>
       </div>
+
+      {/* India Intelligence */}
+      {(d.indian_digital_channels?.length || d.offline_india_channels?.length || d.india_first_customer_playbook) && (
+        <div style={{ background: "#fff8f0", border: "1px solid #FF993340", borderRadius: 12, padding: "18px 20px", marginTop: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <IndiaBadge />
+            <span style={{ fontSize: 12, color: "var(--ink-3)" }}>India-specific go-to-market tactics</span>
+          </div>
+
+          {d.indian_digital_channels && d.indian_digital_channels.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ ...RS.label, marginBottom: 8 }}>Digital Channels (India)</div>
+              <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                {d.indian_digital_channels.map((ch, i) => (
+                  <span key={i} style={{ fontSize: 12, padding: "3px 10px", borderRadius: 99, background: "#FF993315", color: "#cc7a00", border: "1px solid #FF993340", fontWeight: 500 }}>{ch}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {d.offline_india_channels && d.offline_india_channels.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ ...RS.label, marginBottom: 8 }}>Offline Channels (India)</div>
+              <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                {d.offline_india_channels.map((ch, i) => (
+                  <Chip key={i} label={ch} color="neutral" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {d.india_first_customer_playbook && (
+            <div style={{ padding: "12px 16px", background: "#FF993318", border: "1px solid #FF993340", borderRadius: 10 }}>
+              <div style={{ ...RS.label, color: "#cc7a00", marginBottom: 6 }}>30-Day India Playbook</div>
+              <p style={{ fontSize: 13, color: "var(--ink)", lineHeight: 1.7 }}>{d.india_first_customer_playbook}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <WTMFYBox>{d.what_this_means_for_you}</WTMFYBox>
     </SectionShell>

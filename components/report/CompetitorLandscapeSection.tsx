@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionShell, WTMFYBox, Chip, RS, ErrorSection } from "../ui/ReportPrimitives";
+import { SectionShell, WTMFYBox, Chip, RS, ErrorSection, IndiaBadge } from "../ui/ReportPrimitives";
 import type { CompetitorLandscape } from "@/lib/schemas";
 
 interface Props {
@@ -32,6 +32,7 @@ export default function CompetitorLandscapeSection({ data }: Props) {
                   <span style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{c.name}</span>
                   <Chip label={c.type} color={typeColor[c.type]} />
                   <Chip label={`${c.threat_level} threat`} color={threatColor[c.threat_level]} />
+                  {c.indian_player && <IndiaBadge />}
                 </div>
                 <p style={{ fontSize: 13, color: "var(--ink-2)", lineHeight: 1.5 }}>{c.description}</p>
                 {c.estimated_pricing && (
@@ -67,6 +68,37 @@ export default function CompetitorLandscapeSection({ data }: Props) {
               <span style={{ fontWeight: 600, color: "var(--accent)" }}>Learn from them: </span>
               {c.what_you_can_learn_from_them}
             </div>
+
+            {/* India Intelligence */}
+            {(c.indian_player || c.funding_stage_india || c.geographic_presence || c.tracxn_crunchbase_hint) && (
+              <div style={{ borderTop: "1px solid #FF993330", paddingTop: 12, marginTop: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <IndiaBadge />
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 10, marginBottom: c.tracxn_crunchbase_hint ? 10 : 0 }}>
+                  {c.funding_stage_india && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ ...RS.label }}>Funding Stage</span>
+                      <Chip label={c.funding_stage_india} color="blue" />
+                    </div>
+                  )}
+                  {c.indian_vc_backed && (
+                    <Chip label="VC Backed" color="amber" />
+                  )}
+                  {c.geographic_presence && c.geographic_presence.length > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" as const }}>
+                      <span style={{ ...RS.label }}>Cities</span>
+                      {c.geographic_presence.map((city, k) => <Chip key={k} label={city} color="neutral" />)}
+                    </div>
+                  )}
+                </div>
+                {c.tracxn_crunchbase_hint && (
+                  <div style={{ padding: "8px 12px", background: "#FF993310", border: "1px solid #FF993330", borderRadius: 8, fontSize: 12, color: "#cc7a00" }}>
+                    <span style={{ fontWeight: 600 }}>Research: </span>{c.tracxn_crunchbase_hint}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
