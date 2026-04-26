@@ -13,12 +13,12 @@ export async function runAIModule<T>(
   outputSchema: ZodSchema<T>
 ): Promise<{ result: T; modelUsed: string }> {
   const tryGroq = async (prompt: string): Promise<T> => {
-    const raw = await callGroq(systemPrompt, prompt);
+    const raw = await callGroq(systemPrompt, prompt, 30000, moduleId);
     try {
       return outputSchema.parse(parseJson(raw));
     } catch {
       const correctionPrompt = `Your previous response was not valid JSON matching the required schema. Respond ONLY with valid JSON. No prose, no markdown.\n\n${prompt}`;
-      const raw2 = await callGroq(systemPrompt, correctionPrompt);
+      const raw2 = await callGroq(systemPrompt, correctionPrompt, 30000, moduleId);
       return outputSchema.parse(parseJson(raw2));
     }
   };
