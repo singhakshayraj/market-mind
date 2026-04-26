@@ -13,6 +13,7 @@ import {
   RiskRadarSchema,
   TrendTimingSchema,
   InvestorLensSchema,
+  DigitalMarketingSchema,
 } from "@/lib/schemas";
 import {
   systemPrompt as ideaPrompt,
@@ -54,6 +55,10 @@ import {
   systemPrompt as investorPrompt,
   buildUserPrompt as investorUserPrompt,
 } from "@/lib/ai/prompts/10-investor-lens";
+import {
+  systemPrompt as digitalMarketingPrompt,
+  buildUserPrompt as digitalMarketingUserPrompt,
+} from "@/lib/ai/prompts/11-digital-marketing";
 
 export const runtime = "nodejs";
 
@@ -126,6 +131,7 @@ export async function POST(req: NextRequest) {
           "08-risk-radar": "Scanning for risks...",
           "09-trend-timing": "Analysing market trends...",
           "10-investor-lens": "Putting on the investor lens...",
+          "11-digital-marketing": "Planning your digital marketing strategy...",
         };
 
         Object.entries(moduleLabels).forEach(([moduleId, label]) => {
@@ -142,12 +148,13 @@ export async function POST(req: NextRequest) {
           runAIModule("08-risk-radar", riskPrompt, riskUserPrompt(ideaJson), RiskRadarSchema),
           runAIModule("09-trend-timing", trendPrompt, trendUserPrompt(ideaJson, trendSearchText), TrendTimingSchema),
           runAIModule("10-investor-lens", investorPrompt, investorUserPrompt(ideaJson), InvestorLensSchema),
+          runAIModule("11-digital-marketing", digitalMarketingPrompt, digitalMarketingUserPrompt(ideaJson, JSON.stringify(modules["03-customer-profiling"] ?? {}, null, 2)), DigitalMarketingSchema),
         ]);
 
         const moduleIds = [
           "02-market-sizing", "03-customer-profiling", "04-competitor-landscape",
           "05-problem-validation", "06-business-model", "07-go-to-market",
-          "08-risk-radar", "09-trend-timing", "10-investor-lens",
+          "08-risk-radar", "09-trend-timing", "10-investor-lens", "11-digital-marketing",
         ] as const;
 
         moduleIds.forEach((moduleId, i) => {

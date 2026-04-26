@@ -13,7 +13,7 @@ export const RS = {
 
 const MODULE_NAMES = [
   "Idea Decoder","Market Sizing","Customer Profiles","Competitor Map","Problem Validation",
-  "Business Model","Go-to-Market","Risk Radar","Trend & Timing","Investor Lens",
+  "Business Model","Go-to-Market","Risk Radar","Trend & Timing","Investor Lens","Digital Marketing",
 ];
 
 /* ── WhatThisMeansForYou ── */

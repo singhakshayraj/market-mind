@@ -11,6 +11,7 @@ import GoToMarketSection from "./GoToMarketSection";
 import RiskRadarSection from "./RiskRadarSection";
 import TrendTimingSection from "./TrendTimingSection";
 import InvestorLensSection from "./InvestorLensSection";
+import DigitalMarketingSection from "./DigitalMarketingSection";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
   { id: "risk-radar",            num: 8,  label: "Risk Radar", locked: true },
   { id: "trend-timing",          num: 9,  label: "Trend & Timing", locked: true },
   { id: "investor-lens",         num: 10, label: "Investor Lens", locked: true },
+  { id: "digital-marketing",     num: 11, label: "Digital Marketing" },
 ];
 
 function useReadingProgress() {
@@ -250,6 +252,7 @@ export default function ReportClient({ report }: Props) {
             <RiskRadarSection data={modules["08-risk-radar"]} />
             <TrendTimingSection data={modules["09-trend-timing"]} />
             <InvestorLensSection data={modules["10-investor-lens"]} />
+            <DigitalMarketingSection data={modules["11-digital-marketing"]} />
           </div>
 
           {/* Bottom CTA */}

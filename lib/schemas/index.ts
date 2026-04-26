@@ -198,6 +198,49 @@ export const InvestorLensSchema = z.object({
 });
 export type InvestorLens = z.infer<typeof InvestorLensSchema>;
 
+// Module 11 — Digital Marketing Strategy
+export const DigitalMarketingSchema = z.object({
+  plain_english_summary: z.string(),
+  recommended_channels: z.array(z.object({
+    platform: z.string(),
+    why_this_platform: z.string(),
+    campaign_type: z.string(),
+    monthly_budget_range: z.object({
+      minimum: z.string(),
+      recommended: z.string(),
+      scale: z.string(),
+    }),
+    estimated_cpc: z.string(),
+    estimated_cpm: z.string(),
+    estimated_cpa: z.string(),
+    targeting_strategy: z.string(),
+    creative_strategy: z.string(),
+    expected_roas: z.string(),
+    time_to_results: z.string(),
+  })),
+  launch_campaign_plan: z.object({
+    phase_1: z.object({ name: z.string(), budget: z.string(), objective: z.string(), actions: z.array(z.string()) }),
+    phase_2: z.object({ name: z.string(), budget: z.string(), objective: z.string(), actions: z.array(z.string()) }),
+    phase_3: z.object({ name: z.string(), budget: z.string(), objective: z.string(), actions: z.array(z.string()) }),
+  }),
+  funnel_breakdown: z.object({
+    awareness: z.string(),
+    consideration: z.string(),
+    conversion: z.string(),
+    retention: z.string(),
+  }),
+  total_monthly_budget_estimate: z.object({
+    bootstrapped: z.string(),
+    growth_stage: z.string(),
+    breakdown_note: z.string(),
+  }),
+  organic_strategy: z.string(),
+  key_metrics_to_track: z.array(z.string()),
+  common_mistakes_to_avoid: z.array(z.string()),
+  what_this_means_for_you: z.string(),
+});
+export type DigitalMarketing = z.infer<typeof DigitalMarketingSchema>;
+
 // Assembled report type
 export interface FullReport {
   id: string;
@@ -216,5 +259,6 @@ export interface FullReport {
     "08-risk-radar"?: { result: RiskRadar; modelUsed: string; error?: string };
     "09-trend-timing"?: { result: TrendTiming; modelUsed: string; error?: string };
     "10-investor-lens"?: { result: InvestorLens; modelUsed: string; error?: string };
+    "11-digital-marketing"?: { result: DigitalMarketing; modelUsed: string; error?: string };
   };
 }
