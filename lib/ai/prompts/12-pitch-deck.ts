@@ -189,11 +189,125 @@ You must output ONLY valid JSON matching this exact schema:
   ]
 }`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractEssentials(modules: Record<string, any>): string {
+  const m = modules;
+  const get = (key: string) => m[key]?.result ?? {};
+
+  const idea = get("01-idea-decoder");
+  const market = get("02-market-sizing");
+  const customer = get("03-customer-profiling");
+  const competitor = get("04-competitor-landscape");
+  const problem = get("05-problem-validation");
+  const bizModel = get("06-business-model");
+  const gtm = get("07-go-to-market");
+  const risk = get("08-risk-radar");
+  const trend = get("09-trend-timing");
+  const investor = get("10-investor-lens");
+  const marketing = get("11-digital-marketing");
+
+  return JSON.stringify({
+    idea: {
+      plain_english_summary: idea.plain_english_summary,
+      problem_statement: idea.problem_statement,
+      solution: idea.solution,
+      target_customer: idea.target_customer,
+      value_proposition: idea.value_proposition,
+      industry: idea.industry,
+      geography: idea.geography,
+      key_assumptions: idea.key_assumptions,
+    },
+    market: {
+      tam: market.tam,
+      sam: market.sam,
+      som: market.som,
+      india_market_size_inr: market.india_market_size_inr,
+      india_growth_rate: market.india_growth_rate,
+      india_market_size_source: market.india_market_size_source,
+      confidence_level: market.confidence_level,
+    },
+    customer: {
+      personas: (customer.personas ?? []).slice(0, 3).map((p: Record<string, unknown>) => ({
+        name: p.name, age_range: p.age_range, occupation: p.occupation,
+        goals: (p.goals as string[] ?? []).slice(0, 2),
+        pain_points: (p.pain_points as string[] ?? []).slice(0, 2),
+        willingness_to_pay: p.willingness_to_pay,
+        monthly_income_inr: p.monthly_income_inr,
+        tier_city: p.tier_city,
+      })),
+      early_adopter_profile: customer.early_adopter_profile,
+    },
+    competitor: {
+      competitors: (competitor.competitors ?? []).slice(0, 5).map((c: Record<string, unknown>) => ({
+        name: c.name, type: c.type,
+        strengths: (c.strengths as string[] ?? []).slice(0, 2),
+        weaknesses: (c.weaknesses as string[] ?? []).slice(0, 2),
+        threat_level: c.threat_level, indian_player: c.indian_player,
+      })),
+      whitespace_opportunity: competitor.whitespace_opportunity,
+    },
+    problem_validation: {
+      score: problem.score, verdict: problem.verdict,
+      key_evidence_for: (problem.key_evidence_for ?? []).slice(0, 3),
+      key_evidence_against: (problem.key_evidence_against ?? []).slice(0, 2),
+    },
+    business_model: {
+      recommended_model: bizModel.recommended_model,
+      recommendation_reason: bizModel.recommendation_reason,
+      unit_economics_example: bizModel.unit_economics_example,
+      models: (bizModel.models ?? []).slice(0, 2).map((bm: Record<string, unknown>) => ({
+        name: bm.name, description: bm.description,
+        estimated_time_to_revenue: bm.estimated_time_to_revenue,
+      })),
+    },
+    go_to_market: {
+      positioning_statement: gtm.positioning_statement,
+      key_message: gtm.key_message,
+      first_90_days: (gtm.first_90_days ?? []).slice(0, 3),
+      channels: (gtm.channels ?? []).slice(0, 3).map((ch: Record<string, unknown>) => ({ channel: ch.channel, why: ch.why })),
+      india_first_customer_playbook: gtm.india_first_customer_playbook,
+    },
+    risk: {
+      overall_risk_level: risk.overall_risk_level,
+      biggest_risk_summary: risk.biggest_risk_summary,
+      risks: (risk.risks ?? []).slice(0, 4).map((r: Record<string, unknown>) => ({
+        title: r.title, probability: r.probability, impact: r.impact, mitigation: r.mitigation,
+      })),
+    },
+    trend: {
+      timing_verdict: trend.timing_verdict,
+      tailwinds: (trend.tailwinds ?? []).slice(0, 3),
+      notable_recent_developments: (trend.notable_recent_developments ?? []).slice(0, 3),
+    },
+    investor: {
+      vc_attractiveness_score: investor.vc_attractiveness_score,
+      thesis_fit: investor.thesis_fit,
+      what_vcs_love: (investor.what_vcs_love ?? []).slice(0, 3),
+      red_flags: (investor.red_flags ?? []).slice(0, 3),
+      bootstrappable: investor.bootstrappable,
+    },
+    marketing: {
+      recommended_channels: (marketing.recommended_channels ?? []).slice(0, 3).map((ch: Record<string, unknown>) => ({
+        platform: ch.platform, why_this_platform: ch.why_this_platform,
+      })),
+      organic_strategy: marketing.organic_strategy,
+    },
+  }, null, 1);
+}
+
 export function buildUserPrompt(allModulesJson: string): string {
-  return `Here is the complete market research for this business idea. Use ALL of this data to build a 10-slide pitch deck. Every claim must come from this research — do not invent any facts, statistics, or market data.
+  let modules: Record<string, unknown>;
+  try {
+    modules = JSON.parse(allModulesJson);
+  } catch {
+    modules = {};
+  }
+  const condensed = extractEssentials(modules as Record<string, Record<string, unknown>>);
 
-FULL RESEARCH OUTPUT:
-${allModulesJson}
+  return `Here is condensed market research for this business idea. Build a 10-slide pitch deck using ONLY data from this research — do not invent facts or statistics.
 
-Build a pitch deck that would make a Sequoia India partner lean forward. Be specific, be sharp, use the actual numbers from the research. Make the story flow: problem → solution → market → customer → competitors → business model → go-to-market → risks → why now → ask.`;
+RESEARCH:
+${condensed}
+
+Build a pitch deck that would make a Sequoia India partner lean forward. Be specific, use actual numbers from the research. Story flow: problem → solution → market → customer → competitors → business model → go-to-market → risks → why now → ask.`;
 }
