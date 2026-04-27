@@ -1,3 +1,7 @@
 {
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "functions": {
+    "app/api/analyse/route.ts": { "maxDuration": 60 },
+    "app/api/deck/route.ts": { "maxDuration": 30 }
+  }
 }

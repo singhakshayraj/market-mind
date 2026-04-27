@@ -9,6 +9,10 @@ create table if not exists reports (
   modules     jsonb not null default '{}'
 );
 
+-- Module 12: Pitch Deck persistence
+alter table reports add column if not exists pitch_deck_data jsonb;
+alter table reports add column if not exists pitch_deck_generated_at timestamptz;
+
 -- Allow public read of reports by ID (for shareable links)
 alter table reports enable row level security;
 
@@ -18,4 +22,9 @@ create policy "Public read by ID"
 
 create policy "Service role insert"
   on reports for insert
+  with check (true);
+
+create policy "Service role update"
+  on reports for update
+  using (true)
   with check (true);
