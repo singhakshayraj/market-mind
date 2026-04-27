@@ -12,6 +12,7 @@ import RiskRadarSection from "./RiskRadarSection";
 import TrendTimingSection from "./TrendTimingSection";
 import InvestorLensSection from "./InvestorLensSection";
 import DigitalMarketingSection from "./DigitalMarketingSection";
+import PitchDeckGenerator from "./PitchDeckGenerator";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { id: "trend-timing",          num: 9,  label: "Trend & Timing", locked: true },
   { id: "investor-lens",         num: 10, label: "Investor Lens", locked: true },
   { id: "digital-marketing",     num: 11, label: "Digital Marketing" },
+  { id: "pitch-deck",            num: 12, label: "Pitch Deck", isNew: true },
 ];
 
 function useReadingProgress() {
@@ -168,6 +170,7 @@ export default function ReportClient({ report }: Props) {
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             const isLocked = item.locked;
+            const isNew = "isNew" in item && item.isNew;
             return (
               <button
                 key={item.id}
@@ -184,11 +187,12 @@ export default function ReportClient({ report }: Props) {
                   width: "100%", marginBottom: 2,
                 }}
               >
-                <span style={{ fontSize: 11, fontWeight: 600, color: isActive ? "var(--accent)" : "var(--ink-3)", minWidth: 16 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: isActive ? "var(--accent)" : isNew ? "#FF9933" : "var(--ink-3)", minWidth: 16 }}>
                   {item.num.toString().padStart(2, "0")}
                 </span>
                 <span style={{ flex: 1 }}>{item.label}</span>
                 {isLocked && <span style={{ fontSize: 11 }}>🔒</span>}
+                {isNew && <span style={{ fontSize: 9, fontWeight: 700, color: "#FF9933", background: "rgba(255,153,51,0.12)", padding: "1px 5px", borderRadius: 4 }}>NEW</span>}
               </button>
             );
           })}
@@ -220,6 +224,9 @@ export default function ReportClient({ report }: Props) {
                   {idData?.geography ?? report.geography}
                 </span>
               )}
+              <span style={{ fontSize: 12, fontWeight: 500, padding: "3px 10px", borderRadius: 99, background: "var(--bg-card)", border: "1px solid var(--rule)", color: "var(--ink-3)" }}>
+                Market Research · Stress Test · Pitch Deck
+              </span>
             </div>
             <h1 style={{ fontFamily: "'DM Serif Display',serif", fontSize: "clamp(26px,3.5vw,40px)", fontWeight: 400, letterSpacing: "-0.03em", color: "var(--ink)", lineHeight: 1.1, marginBottom: 12 }}>
               {idData?.plain_english_summary?.slice(0, 80) ?? "Your Market Research Report"}
@@ -236,7 +243,7 @@ export default function ReportClient({ report }: Props) {
                 <StatCard label="Total Market (TAM)" value={msData.tam.value} />
               )}
               <StatCard label="Est. Read Time" value={`${readMins} min`} />
-              <StatCard label="Modules Run" value={`${Object.keys(modules).length}/10`} />
+              <StatCard label="Modules Run" value={`${Object.keys(modules).length}/11`} />
             </div>
           </div>
 
@@ -253,6 +260,10 @@ export default function ReportClient({ report }: Props) {
             <TrendTimingSection data={modules["09-trend-timing"]} />
             <InvestorLensSection data={modules["10-investor-lens"]} />
             <DigitalMarketingSection data={modules["11-digital-marketing"]} />
+            <PitchDeckGenerator
+              reportId={report.id}
+              initialDeck={report.pitch_deck_data ?? null}
+            />
           </div>
 
           {/* Bottom CTA */}
